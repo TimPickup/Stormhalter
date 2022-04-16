@@ -199,6 +199,38 @@
         return balm;
     }
     
+    public class HummingPortal : CreatureEntity
+    {
+        public HummingPortal()
+        {
+            Name = "HummingPortal";
+            IsInvisible = true;
+            IsInvulnerable = true;
+            Movement = 0; // static (its a portal)
+            RangePerception = 0; //only trigger for players on this hex
+            Alignment = Alignment.Chaotic;
+            Body = 26;
+            CanLoot = false;
+        }
+        
+        public override Corpse GetCorpse() => default(Corpse);
+
+        public HummingGuardian(Serial serial) : base(serial)
+        {
+        }
+
+        public override void OnSpawn()
+        {
+            base.OnSpawn();
+
+            if (_brain != null)
+                return;
+                
+            _brain = new IdleAI(this);
+        }
+
+    }
+    
     public class HummingGuardian : CreatureEntity
     {
         public HummingGuardian()
@@ -102957,7 +102989,7 @@ var gargoyle = new Gargoyle()
         <block><![CDATA[]]></block>
         <block><![CDATA[
     /* This is a special entity that will use to do custom code "onIncommingPlayer" and check if they are allowed to enter the hummer guardian*/
-    var portal = new VendorEntity()
+    var portal = new HummingPortal()
     {
         Name = "HummingPortal",
         IsInvisible = true,
@@ -102980,11 +103012,11 @@ var gargoyle = new Gargoyle()
       <script name="OnIncomingPlayer" enabled="true">
         <block><![CDATA[]]></block>
         <block><![CDATA[
-    //First, get the hummer ammuklet in either hand
-    ItemEntity hummerAmmulet = (player.LeftHand != null && player.LeftHand is HummingbirdAmulet ? player.LeftHand : (player.RightHand != null && player.RightHand is HummingbirdAmulet ? player.RightHand : null) );
+    //First, get the hummer amulet in either hand
+    ItemEntity hummerAmulet = (player.LeftHand != null && player.LeftHand is HummingbirdAmulet ? player.LeftHand : (player.RightHand != null && player.RightHand is HummingbirdAmulet ? player.RightHand : null) );
     
     //if no ammulet then refuse
-    if( hummerAmmulet == null ) 
+    if( hummerAmulet == null ) 
     {
         source.Say("You must offer a Hummingbird Amulet in your hand to enter");
         return;
@@ -103009,7 +103041,7 @@ var gargoyle = new Gargoyle()
     }
     
     //no one in there so destroy ammulet and teleport them in..
-    hummerAmmulet.Delete();
+    hummerAmulet.Delete();
     player.Teleport(new Point2D(2, 19, 10));
     
 ]]></block>
@@ -104252,8 +104284,8 @@ var gargoyle = new Gargoyle()
       <location x="15" y="3" region="2" />
     </spawn>
     <spawn type="LocationSpawner" name="Humming Portal">
-      <minimumDelay>0</minimumDelay>
-      <maximumDelay>0</maximumDelay>
+      <minimumDelay>900</minimumDelay>
+      <maximumDelay>900</maximumDelay>
       <maximum>1</maximum>
       <script name="OnAfterSpawn" enabled="false">
         <block><![CDATA[]]></block>
